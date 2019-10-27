@@ -1,0 +1,12 @@
+name: 'Create PR Comment'
+description: 'Leave a comment on the PR running the action.'
+branding:
+  icon: 'message-square'
+  color: 'blue'
+inputs:
+  body:
+    description: 'Body of the comment'
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
