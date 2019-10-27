@@ -7744,32 +7744,52 @@ module.exports = {"activity":{"checkStarringRepo":{"method":"GET","params":{"own
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __importDefault(__webpack_require__(470));
-const github_1 = __importDefault(__webpack_require__(469));
-async function run() {
-    const token = core_1.default.getInput("token", { required: true });
-    const body = core_1.default.getInput("body", { required: true });
-    const octokit = new github_1.default.GitHub(token);
-    const owner = github_1.default.context.issue.owner;
-    const repo = github_1.default.context.issue.repo;
-    const issue_number = github_1.default.context.issue.number;
-    const { data: comments } = await octokit.issues.listComments({
-        owner,
-        repo,
-        issue_number
+const core = __importStar(__webpack_require__(470));
+const github = __importStar(__webpack_require__(469));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const token = core.getInput('token', { required: true });
+            const body = core.getInput('body', { required: true });
+            const octokit = new github.GitHub(token);
+            const owner = github.context.issue.owner;
+            const repo = github.context.issue.repo;
+            const issue_number = github.context.issue.number;
+            const { data: comments } = yield octokit.issues.listComments({
+                owner,
+                repo,
+                issue_number,
+            });
+            if (!comments.find(c => c.body === body)) {
+                yield octokit.issues.createComment({
+                    owner: github.context.repo.owner,
+                    repo: github.context.repo.repo,
+                    issue_number: github.context.issue.number,
+                    body: body,
+                });
+            }
+        }
+        catch (error) {
+            core.setFailed(error);
+        }
     });
-    if (!comments.find(c => c.body === body)) {
-        await octokit.issues.createComment({
-            owner: github_1.default.context.repo.owner,
-            repo: github_1.default.context.repo.repo,
-            issue_number: github_1.default.context.issue.number,
-            body: body
-        });
-    }
 }
 run();
 
